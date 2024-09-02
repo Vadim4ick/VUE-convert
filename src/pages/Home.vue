@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { useCurrencyStore } from "@/shared/store/currency.store";
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 
 const currencyStore = useCurrencyStore();
 
-onMounted(async () => {
-  currencyStore.fetchExchangeRates();
-});
+
 
 const displayRates = computed(() => {
   const base = currencyStore.currentCurrency.toLowerCase() as

@@ -1,23 +1,31 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import Dropdown from "@/components/ui/Dropdown.vue";
+import { useCurrencyStore } from "@/shared/store/currency.store";
+import { convertCurrency } from "@/shared/lib/utils";
 
-const currencies = ["RUB", "USD", "EUR"];
+const currencyStore = useCurrencyStore();
+
 const fromCurrency = ref("RUB");
 const toCurrency = ref("USD");
 const fromAmount = ref(0);
 const toAmount = ref(0);
 
-const exchangeRates = {
-  RUB: { USD: 0.01094, EUR: 0.00984 },
-  USD: { RUB: 91.45, EUR: 0.91 },
-  EUR: { RUB: 101.74, USD: 1.1 },
-};
+watch(
+  [currencyStore.exchangeRates, fromCurrency, toCurrency, fromAmount],
+  () => {
+    const rate = convertCurrency(
+      fromAmount.value,
+      fromCurrency.value,
+      toCurrency.value,
+      currencyStore.exchangeRates
+    );
 
-watch([fromAmount, fromCurrency, toCurrency], () => {
-  const rate = exchangeRates[fromCurrency.value][toCurrency.value];
-  toAmount.value = (fromAmount.value * rate).toFixed(2);
-});
+    console.log("rate", rate);
+
+    toAmount.value = (rate * fromAmount.value).toFixed(2);
+  }
+);
 </script>
 
 <template>
@@ -31,9 +39,10 @@ watch([fromAmount, fromCurrency, toCurrency], () => {
       <form class="flex items-center justify-center flex-col space-y-6">
         <div class="flex items-center space-x-4 border-b pb-4 mb-4">
           <Dropdown
-            :options="currencies"
+            :options="currencyStore.currency"
             v-model="fromCurrency"
             class="flex-1"
+            :onChange="() => {}"
           />
 
           <input
@@ -45,7 +54,12 @@ watch([fromAmount, fromCurrency, toCurrency], () => {
         </div>
 
         <div class="flex items-center space-x-4">
-          <Dropdown :options="currencies" v-model="toCurrency" class="flex-1" />
+          <Dropdown
+            :options="currencyStore.currency"
+            v-model="toCurrency"
+            class="flex-1"
+            :onChange="() => {}"
+          />
 
           <input
             type="number"

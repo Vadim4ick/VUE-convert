@@ -5,6 +5,7 @@ import Dropdown from "./ui/Dropdown.vue";
 import { navbarItems } from "@/shared/constants/navbar.const";
 import { useCurrencyStore } from "@/shared/store/currency.store";
 import { Currency } from "@/shared/constants/currency.const";
+import { onMounted } from "vue";
 
 const currencyStore = useCurrencyStore();
 
@@ -13,6 +14,10 @@ function onChange(e: Event) {
 
   currencyStore.toggle(val);
 }
+
+onMounted(async () => {
+  currencyStore.fetchExchangeRates();
+});
 </script>
 
 <template>
