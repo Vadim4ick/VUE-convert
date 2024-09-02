@@ -1,21 +1,11 @@
 <script setup lang="ts">
-import { fetchExchangeRates } from "@/shared/api";
-import { ExchangeRates } from "@/shared/constants/currency.const";
 import { useCurrencyStore } from "@/shared/store/currency.store";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted } from "vue";
 
 const currencyStore = useCurrencyStore();
 
-const exchangeRates = ref<Partial<ExchangeRates>>({});
-
 onMounted(async () => {
-  const rates = await fetchExchangeRates();
-
-  try {
-    exchangeRates.value = rates;
-  } catch (error) {
-    console.error("Ошибка получения обменных курсов:", error);
-  }
+  currencyStore.fetchExchangeRates();
 });
 
 const displayRates = computed(() => {
@@ -24,16 +14,18 @@ const displayRates = computed(() => {
     | "eur"
     | "rub";
 
+  const exchangeRates = currencyStore.exchangeRates;
+
   return {
     toBaseCurrency: {
-      usd: base === "usd" ? 1 : exchangeRates.value[`usd-${base}`],
-      eur: base === "eur" ? 1 : exchangeRates.value[`eur-${base}`],
-      rub: base === "rub" ? 1 : exchangeRates.value[`rub-${base}`],
+      usd: base === "usd" ? 1 : exchangeRates[`usd-${base}`],
+      eur: base === "eur" ? 1 : exchangeRates[`eur-${base}`],
+      rub: base === "rub" ? 1 : exchangeRates[`rub-${base}`],
     },
     fromBaseCurrency: {
-      usd: base === "usd" ? 1 : exchangeRates.value[`${base}-usd`],
-      eur: base === "eur" ? 1 : exchangeRates.value[`${base}-eur`],
-      rub: base === "rub" ? 1 : exchangeRates.value[`${base}-rub`],
+      usd: base === "usd" ? 1 : exchangeRates[`${base}-usd`],
+      eur: base === "eur" ? 1 : exchangeRates[`${base}-eur`],
+      rub: base === "rub" ? 1 : exchangeRates[`${base}-rub`],
     },
   };
 });

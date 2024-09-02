@@ -59,7 +59,3 @@ watch([fromAmount, fromCurrency, toCurrency], () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Additional scoped styles if needed */
-</style>
