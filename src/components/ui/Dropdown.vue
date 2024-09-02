@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Currency } from "@/shared/constants/currency.const";
-import { ref, defineProps } from "vue";
+import { ref, defineProps, watch } from "vue";
 
 const props = defineProps({
   options: Array as () => Currency[],
@@ -12,6 +12,10 @@ const props = defineProps({
 });
 
 const selected = ref(props.modelValue);
+
+watch(props, () => {
+  selected.value = props.modelValue;
+});
 </script>
 
 <template>

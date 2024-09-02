@@ -10,7 +10,7 @@ export function convertCurrency(
   amount: number,
   fromCurrency: Currency,
   toCurrency: Currency,
-  exchangeRates: ExchangeRates
+  exchangeRates: Partial<ExchangeRates>
 ) {
   // Check if the currencies are the same
   if (fromCurrency === toCurrency) {
@@ -19,7 +19,7 @@ export function convertCurrency(
 
   let rateKey = `${fromCurrency.toLowerCase()}-${toCurrency.toLowerCase()}`;
 
-  const rate = exchangeRates[rateKey];
+  const rate = exchangeRates[rateKey as keyof ExchangeRates];
 
   if (!rate) {
     throw new Error("Conversion rate not found");
@@ -27,3 +27,10 @@ export function convertCurrency(
 
   return amount * rate;
 }
+
+export const convertCurrencyNumber = (amount: string | number) => {
+  return new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+  }).format(+amount);
+};

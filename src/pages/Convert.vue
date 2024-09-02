@@ -3,16 +3,29 @@ import { ref, watch } from "vue";
 import Dropdown from "@/components/ui/Dropdown.vue";
 import { useCurrencyStore } from "@/shared/store/currency.store";
 import { convertCurrency } from "@/shared/lib/utils";
+import { Currency } from "@/shared/constants/currency.const";
 
 const currencyStore = useCurrencyStore();
 
-const fromCurrency = ref("RUB");
-const toCurrency = ref("USD");
+const fromCurrency = ref<Currency>(currencyStore.currentCurrency);
+const toCurrency = ref<Currency>("USD");
+
 const fromAmount = ref(0);
 const toAmount = ref(0);
 
+// Функция для обработки изменений валют
+const onCurrencyChange = (type: "from" | "to") => (e: Event) => {
+  const value = (e.target as HTMLSelectElement).value as Currency;
+
+  if (type === "from") {
+    fromCurrency.value = value;
+  } else {
+    toCurrency.value = value;
+  }
+};
+
 watch(
-  [currencyStore.exchangeRates, fromCurrency, toCurrency, fromAmount],
+  [fromCurrency, toCurrency, fromAmount, currencyStore.exchangeRates],
   () => {
     const rate = convertCurrency(
       fromAmount.value,
@@ -21,9 +34,14 @@ watch(
       currencyStore.exchangeRates
     );
 
-    console.log("rate", rate);
+    toAmount.value = rate;
+  }
+);
 
-    toAmount.value = (rate * fromAmount.value).toFixed(2);
+watch(
+  () => currencyStore.currentCurrency,
+  (newCurrency) => {
+    fromCurrency.value = newCurrency;
   }
 );
 </script>
@@ -42,7 +60,7 @@ watch(
             :options="currencyStore.currency"
             v-model="fromCurrency"
             class="flex-1"
-            :onChange="() => {}"
+            :onChange="onCurrencyChange('from')"
           />
 
           <input
@@ -58,7 +76,7 @@ watch(
             :options="currencyStore.currency"
             v-model="toCurrency"
             class="flex-1"
-            :onChange="() => {}"
+            :onChange="onCurrencyChange('to')"
           />
 
           <input
