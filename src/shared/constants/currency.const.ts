@@ -1,5 +1,4 @@
 export type Currency = "RUB" | "USD" | "EUR";
-export type CurrencyValue = "usd-rub" | "eur-rub" | "rub-eur" | "rub-usd";
 
 export interface ExchangeRates {
   "usd-rub": number;

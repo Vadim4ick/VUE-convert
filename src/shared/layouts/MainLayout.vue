@@ -6,7 +6,7 @@ import Header from "@/components/Header.vue";
   <div>
     <Header />
 
-    <main>
+    <main class="bg-gray-100">
       <router-view />
     </main>
   </div>

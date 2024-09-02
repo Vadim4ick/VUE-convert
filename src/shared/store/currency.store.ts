@@ -21,9 +21,7 @@ const defaultValue: CurrencyState = {
 
 export const useCurrencyStore = defineStore("currency", {
   state: () => defaultValue,
-  getters: {
-    // isAuth: (state) => Boolean(state.user.email),
-  },
+  getters: {},
 
   actions: {
     async fetchExchangeRates() {
