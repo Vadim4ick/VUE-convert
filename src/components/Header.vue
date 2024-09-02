@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
 import Dropdown from "./ui/Dropdown.vue";
 
 import { navbarItems } from "@/shared/constants/navbar.const";
-import {
-  Currency,
-  currencies,
-  defaultCurrency,
-} from "@/shared/constants/currency.const";
+import { useCurrencyStore } from "@/shared/store/currency.store";
+import { Currency } from "@/shared/constants/currency.const";
 
-const selectedCurrency = ref<Currency>(defaultCurrency);
+const currencyStore = useCurrencyStore();
+
+function onChange(e: Event) {
+  const val = (e.target as HTMLSelectElement).value as Currency;
+
+  currencyStore.toggle(val);
+}
 </script>
 
 <template>
@@ -29,7 +31,11 @@ const selectedCurrency = ref<Currency>(defaultCurrency);
           </RouterLink>
         </nav>
 
-        <Dropdown :options="currencies" v-model="selectedCurrency" />
+        <Dropdown
+          :options="currencyStore.currency"
+          :onChange="onChange"
+          v-model="currencyStore.currentCurrency"
+        />
       </div>
     </div>
   </header>

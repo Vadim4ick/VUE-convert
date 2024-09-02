@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { fetchExchangeRates } from "@/shared/api";
+import { useCurrencyStore } from "@/shared/store/currency.store";
 import { onMounted, ref } from "vue";
 
-const baseCurrency = ref("RUB");
+const currencyStore = useCurrencyStore();
 
 const exchangeRates = ref({
   usdRub: 0,
@@ -36,23 +37,27 @@ onMounted(async () => {
         </h1>
 
         <p class="text-center">
-          (Базовая валюта: <b>{{ baseCurrency }}</b
+          (Базовая валюта: <b>{{ currencyStore.currentCurrency }}</b
           >)
         </p>
       </div>
 
       <ul class="space-y-4 flex flex-col justify-center items-center">
         <li class="text-lg">
-          1 USD = {{ exchangeRates.usdRub.toFixed(2) }} {{ baseCurrency }}
+          1 USD = {{ exchangeRates.usdRub.toFixed(2) }}
+          {{ currencyStore.currentCurrency }}
         </li>
         <li class="text-lg">
-          1 EUR = {{ exchangeRates.eurRub.toFixed(2) }} {{ baseCurrency }}
+          1 EUR = {{ exchangeRates.eurRub.toFixed(2) }}
+          {{ currencyStore.currentCurrency }}
         </li>
         <li class="text-lg">
-          1 {{ baseCurrency }} = {{ exchangeRates.rubEur.toFixed(2) }} EUR
+          1 {{ currencyStore.currentCurrency }} =
+          {{ exchangeRates.rubEur.toFixed(2) }} EUR
         </li>
         <li class="text-lg">
-          1 {{ baseCurrency }} = {{ exchangeRates.rubUsd.toFixed(2) }} USD
+          1 {{ currencyStore.currentCurrency }} =
+          {{ exchangeRates.rubUsd.toFixed(2) }} USD
         </li>
       </ul>
     </div>

@@ -5,18 +5,17 @@ import { ref, defineProps } from "vue";
 const props = defineProps({
   options: Array as () => Currency[],
   modelValue: String,
+  onChange: {
+    type: Function,
+    required: true,
+  },
 });
 
 const selected = ref(props.modelValue);
-
-function selectCurrency(e: Event) {
-  const target = e.target as HTMLSelectElement;
-  selected.value = target.value;
-}
 </script>
 
 <template>
-  <select v-model="selected" @change="selectCurrency($event)">
+  <select v-model="selected" @change="onChange($event)">
     <option v-for="option in options" :key="option" :value="option">
       {{ option }}
     </option>

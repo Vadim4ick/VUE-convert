@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
+import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import Home from "@/pages/Home.vue";
@@ -19,9 +20,11 @@ const routes: Array<RouteRecordRaw> = [
   },
 ];
 
+const pinia = createPinia();
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
-createApp(App).use(router).mount("#app");
+createApp(App).use(router).use(pinia).mount("#app");
