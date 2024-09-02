@@ -1,30 +1,41 @@
 <script setup lang="ts">
 import { fetchExchangeRates } from "@/shared/api";
+import { ExchangeRates } from "@/shared/constants/currency.const";
 import { useCurrencyStore } from "@/shared/store/currency.store";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const currencyStore = useCurrencyStore();
 
-const exchangeRates = ref({
-  usdRub: 0,
-  eurRub: 0,
-  rubEur: 0,
-  rubUsd: 0,
-});
+const exchangeRates = ref<Partial<ExchangeRates>>({});
 
 onMounted(async () => {
   const rates = await fetchExchangeRates();
 
   try {
-    exchangeRates.value = {
-      usdRub: rates["usd-rub"],
-      eurRub: rates["eur-rub"],
-      rubEur: rates["rub-eur"],
-      rubUsd: rates["rub-usd"],
-    };
+    exchangeRates.value = rates;
   } catch (error) {
     console.error("Ошибка получения обменных курсов:", error);
   }
+});
+
+const displayRates = computed(() => {
+  const base = currencyStore.currentCurrency.toLowerCase() as
+    | "usd"
+    | "eur"
+    | "rub";
+
+  return {
+    toBaseCurrency: {
+      usd: base === "usd" ? 1 : exchangeRates.value[`usd-${base}`],
+      eur: base === "eur" ? 1 : exchangeRates.value[`eur-${base}`],
+      rub: base === "rub" ? 1 : exchangeRates.value[`rub-${base}`],
+    },
+    fromBaseCurrency: {
+      usd: base === "usd" ? 1 : exchangeRates.value[`${base}-usd`],
+      eur: base === "eur" ? 1 : exchangeRates.value[`${base}-eur`],
+      rub: base === "rub" ? 1 : exchangeRates.value[`${base}-rub`],
+    },
+  };
 });
 </script>
 
@@ -42,24 +53,45 @@ onMounted(async () => {
         </p>
       </div>
 
-      <ul class="space-y-4 flex flex-col justify-center items-center">
-        <li class="text-lg">
-          1 USD = {{ exchangeRates.usdRub.toFixed(2) }}
-          {{ currencyStore.currentCurrency }}
-        </li>
-        <li class="text-lg">
-          1 EUR = {{ exchangeRates.eurRub.toFixed(2) }}
-          {{ currencyStore.currentCurrency }}
-        </li>
-        <li class="text-lg">
-          1 {{ currencyStore.currentCurrency }} =
-          {{ exchangeRates.rubEur.toFixed(2) }} EUR
-        </li>
-        <li class="text-lg">
-          1 {{ currencyStore.currentCurrency }} =
-          {{ exchangeRates.rubUsd.toFixed(2) }} USD
-        </li>
-      </ul>
+      <div class="flex flex-col gap-5">
+        <div>
+          <h2 class="text-xl font-semibold mb-2 text-center">Курсы покупки</h2>
+
+          <ul class="space-y-4 flex flex-col justify-center items-center">
+            <li class="text-lg" v-if="currencyStore.currentCurrency !== 'USD'">
+              1 USD = {{ displayRates.toBaseCurrency.usd }}
+              {{ currencyStore.currentCurrency }}
+            </li>
+            <li class="text-lg" v-if="currencyStore.currentCurrency !== 'EUR'">
+              1 EUR = {{ displayRates.toBaseCurrency.eur }}
+              {{ currencyStore.currentCurrency }}
+            </li>
+            <li class="text-lg" v-if="currencyStore.currentCurrency !== 'RUB'">
+              1 RUB = {{ displayRates.fromBaseCurrency.rub }}
+              {{ currencyStore.currentCurrency }}
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold mb-2 text-center">Курсы продажи</h2>
+
+          <ul class="space-y-4 flex flex-col justify-center items-center">
+            <li class="text-lg" v-if="currencyStore.currentCurrency !== 'USD'">
+              1 {{ currencyStore.currentCurrency }} =
+              {{ displayRates.fromBaseCurrency.usd }} USD
+            </li>
+            <li class="text-lg" v-if="currencyStore.currentCurrency !== 'EUR'">
+              1 {{ currencyStore.currentCurrency }} =
+              {{ displayRates.fromBaseCurrency.eur }} EUR
+            </li>
+            <li class="text-lg" v-if="currencyStore.currentCurrency !== 'RUB'">
+              1 {{ currencyStore.currentCurrency }} =
+              {{ displayRates.fromBaseCurrency.rub }} RUB
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>

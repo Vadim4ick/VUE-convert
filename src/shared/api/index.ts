@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CurrencyValue } from "../constants/currency.const";
+import { ExchangeRates } from "../constants/currency.const";
 
 const $api = axios.create({
   baseURL: "https://status.neuralgeneration.com/api",
@@ -7,7 +7,7 @@ const $api = axios.create({
 
 export async function fetchExchangeRates() {
   try {
-    const data = await $api.get<Record<CurrencyValue, number>>("/currency");
+    const data = await $api.get<ExchangeRates>("/currency");
 
     return data.data;
   } catch (error) {
