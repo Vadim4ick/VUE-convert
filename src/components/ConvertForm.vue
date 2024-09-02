@@ -61,6 +61,7 @@ watch(
         v-model="fromAmount"
         placeholder="Введите сумму"
         class="flex-1 p-2 border border-gray-300 rounded-lg"
+        :disabled="currencyStore.isLoading"
       />
     </div>
 
